@@ -1,0 +1,16 @@
+K:\Andrii\Мои проекты\tactics_battle\tactics_battle\bin\Debug\net5.0\tactics_battle.exe
+K:\Andrii\Мои проекты\tactics_battle\tactics_battle\bin\Debug\net5.0\tactics_battle.deps.json
+K:\Andrii\Мои проекты\tactics_battle\tactics_battle\bin\Debug\net5.0\tactics_battle.runtimeconfig.json
+K:\Andrii\Мои проекты\tactics_battle\tactics_battle\bin\Debug\net5.0\tactics_battle.runtimeconfig.dev.json
+K:\Andrii\Мои проекты\tactics_battle\tactics_battle\bin\Debug\net5.0\tactics_battle.dll
+K:\Andrii\Мои проекты\tactics_battle\tactics_battle\bin\Debug\net5.0\ref\tactics_battle.dll
+K:\Andrii\Мои проекты\tactics_battle\tactics_battle\bin\Debug\net5.0\tactics_battle.pdb
+K:\Andrii\Мои проекты\tactics_battle\tactics_battle\obj\Debug\net5.0\tactics_battle.csproj.AssemblyReference.cache
+K:\Andrii\Мои проекты\tactics_battle\tactics_battle\obj\Debug\net5.0\tactics_battle.GeneratedMSBuildEditorConfig.editorconfig
+K:\Andrii\Мои проекты\tactics_battle\tactics_battle\obj\Debug\net5.0\tactics_battle.AssemblyInfoInputs.cache
+K:\Andrii\Мои проекты\tactics_battle\tactics_battle\obj\Debug\net5.0\tactics_battle.AssemblyInfo.cs
+K:\Andrii\Мои проекты\tactics_battle\tactics_battle\obj\Debug\net5.0\tactics_battle.csproj.CoreCompileInputs.cache
+K:\Andrii\Мои проекты\tactics_battle\tactics_battle\obj\Debug\net5.0\tactics_battle.dll
+K:\Andrii\Мои проекты\tactics_battle\tactics_battle\obj\Debug\net5.0\ref\tactics_battle.dll
+K:\Andrii\Мои проекты\tactics_battle\tactics_battle\obj\Debug\net5.0\tactics_battle.pdb
+K:\Andrii\Мои проекты\tactics_battle\tactics_battle\obj\Debug\net5.0\tactics_battle.genruntimeconfig.cache
