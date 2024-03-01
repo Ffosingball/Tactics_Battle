@@ -13,7 +13,7 @@ namespace tactics_battle
 
     class Program
     {
-        static public Record[] tactics = new Record[18]
+        static public Record[] tactics = new Record[19]
         {
             new Record { name = "Random", shortName = "R", totalPoints = 0, info = "Рандомно співпрацює або зраджує" },
             new Record { name = "Tit for Tat", shortName = "TfT", totalPoints = 0, info = "Зазвича співпрацює, але якщо його зрадили у минулому ході то він зрадить у наступному" },
@@ -32,7 +32,8 @@ namespace tactics_battle
             new Record { name = "Reversed Single Shot Long", shortName = "RSSL", totalPoints = 0, info = "Співпрацює лише кожен двадцятий хід" },
             new Record { name = "Reversed Single Shot Super Long", shortName = "RSSSL", totalPoints = 0, info = "Співпрацює лише кожен п'ятьдесятий хід" },
             new Record { name = "Soft Majority", shortName = "SM", totalPoints = 0, info = "Співпрацює якщо супротивник більше половини ходів співпрацював, інакше буде зраджувати" },
-            new Record { name = "Hard Majority", shortName = "HM", totalPoints = 0, info = "Співпрацює якщо супротивник більше 75% ходів співпрацював, інакше буде зраджувати" }
+            new Record { name = "Hard Majority", shortName = "HM", totalPoints = 0, info = "Співпрацює якщо супротивник більше 75% ходів співпрацював, інакше буде зраджувати" },
+            new Record { name = "Proverka", shortName = "P", totalPoints = 0, info = "Перевірка" }
         };
 
 
@@ -134,6 +135,9 @@ namespace tactics_battle
                 case "HM":
                     ans = Majority(lastAnsEnemy, 0.75f, curTurn);
                     break;
+                case "P":
+                    ans = Proverka();
+                    break;
                 default:
                     ans=Random_T();
                     break;
@@ -176,6 +180,23 @@ namespace tactics_battle
             int n = r.Next(1, 101);
 
             if (n<51)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+
+
+        static Boolean Proverka()
+        {
+            Random r = new Random();
+            int n = r.Next(1, 101);
+
+            if (n < 10)
             {
                 return false;
             }
