@@ -1,6 +1,10 @@
 {
   "version": 2,
+<<<<<<< Updated upstream
   "dgSpecHash": "WCfArqnKtSgABcUVMS6pcpNWsO7R4TvUPP9epnGgTztcMAaCxg5fU55nIOlF0J3lKw85fcrpUd0wgYutMHGlNw==",
+=======
+  "dgSpecHash": "ZXh+jG0eP20=",
+>>>>>>> Stashed changes
   "success": true,
   "projectFilePath": "K:\\Andrii\\Мои проекты\\tactics_battle\\Tactics_Battle\\tactics_battle.csproj",
   "expectedPackageFiles": [

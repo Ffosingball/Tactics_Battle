@@ -3,7 +3,6 @@ K:\Andrii\Мои проекты\tactics_battle\tactics_battle\bin\Debug\net5.0\t
 K:\Andrii\Мои проекты\tactics_battle\tactics_battle\bin\Debug\net5.0\tactics_battle.runtimeconfig.json
 K:\Andrii\Мои проекты\tactics_battle\tactics_battle\bin\Debug\net5.0\tactics_battle.runtimeconfig.dev.json
 K:\Andrii\Мои проекты\tactics_battle\tactics_battle\bin\Debug\net5.0\tactics_battle.dll
-K:\Andrii\Мои проекты\tactics_battle\tactics_battle\bin\Debug\net5.0\ref\tactics_battle.dll
 K:\Andrii\Мои проекты\tactics_battle\tactics_battle\bin\Debug\net5.0\tactics_battle.pdb
 K:\Andrii\Мои проекты\tactics_battle\tactics_battle\obj\Debug\net5.0\tactics_battle.csproj.AssemblyReference.cache
 K:\Andrii\Мои проекты\tactics_battle\tactics_battle\obj\Debug\net5.0\tactics_battle.GeneratedMSBuildEditorConfig.editorconfig
@@ -14,3 +13,5 @@ K:\Andrii\Мои проекты\tactics_battle\tactics_battle\obj\Debug\net5.0\t
 K:\Andrii\Мои проекты\tactics_battle\tactics_battle\obj\Debug\net5.0\ref\tactics_battle.dll
 K:\Andrii\Мои проекты\tactics_battle\tactics_battle\obj\Debug\net5.0\tactics_battle.pdb
 K:\Andrii\Мои проекты\tactics_battle\tactics_battle\obj\Debug\net5.0\tactics_battle.genruntimeconfig.cache
+K:\Andrii\Мои проекты\tactics_battle\tactics_battle\obj\Debug\net5.0\tactics_battle.sourcelink.json
+K:\Andrii\Мои проекты\tactics_battle\tactics_battle\obj\Debug\net5.0\refint\tactics_battle.dll

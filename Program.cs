@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.VisualBasic.FileIO;
+using System;
+using System.Reflection;
 
 namespace tactics_battle
 {
@@ -13,6 +15,7 @@ namespace tactics_battle
 
     class Program
     {
+<<<<<<< Updated upstream
         static public Record[] tactics = new Record[18]
         {
             new Record { name = "Random", shortName = "R", totalPoints = 0, info = "Рандомно співпрацює або зраджує" },
@@ -33,23 +36,48 @@ namespace tactics_battle
             new Record { name = "Reversed Single Shot Super Long", shortName = "RSSSL", totalPoints = 0, info = "Співпрацює лише кожен п'ятьдесятий хід" },
             new Record { name = "Soft Majority", shortName = "SM", totalPoints = 0, info = "Співпрацює якщо супротивник більше половини ходів співпрацював, інакше буде зраджувати" },
             new Record { name = "Hard Majority", shortName = "HM", totalPoints = 0, info = "Співпрацює якщо супротивник більше 75% ходів співпрацював, інакше буде зраджувати" }
+=======
+        static Record[] tactics = new Record[13]
+        {
+            new Record { name = "Random", shortName = "R", totalPoints = 0, info = "Randomly cooperate or betray" },
+            new Record { name = "Tit for Tat", shortName = "TfT", totalPoints = 0, info = "It usually cooperates, but if it was betrayed in the last turn, it will betray in the next" },
+            new Record { name = "AlwaysC", shortName = "C", totalPoints = 0, info = "Always cooperate" },
+            new Record { name = "AlwaysT", shortName = "T", totalPoints = 0, info = "Always betray" },
+            new Record { name = "Tester", shortName = "Te", totalPoints = 0, info = "In the first turn, it cooperates, in the second he betrays, and if the opponent also betrays on the third turn, it cooperates for the rest of the game. Otherwise, it will betray all subsequent turns" },
+            new Record { name = "User", shortName = "U", totalPoints = 0, info = "If you want to play against other tactics" },
+            new Record { name = "Cycled", shortName = "Cy", totalPoints = 0, info = "Cyclically given number of moves betrays then the same number of moves cooperates" },
+            new Record { name = "Cycled Single Shot", shortName = "CSS", totalPoints = 0, info = "Betrays after every specified number of moves" },
+            new Record { name = "Forgiving Tit for Tat", shortName = "FTfT", totalPoints = 0, info = "It usually cooperates, but if it was betrayed in the last turn, it will betray in the next move with 80% chance" },
+            new Record { name = "Reversed Single Shot", shortName = "RSS", totalPoints = 0, info = "Cooperate after every specified number of moves" },
+            new Record { name = "Soft Majority", shortName = "SM", totalPoints = 0, info = "Cooperates if the opponent has cooperated for more than half of the moves, otherwise he will betray" },
+            new Record { name = "Hard Majority", shortName = "HM", totalPoints = 0, info = "Cooperates if the opponent has cooperated for more than 75% of the moves, otherwise he will betray" },
+            new Record { name = "Check", shortName = "P", totalPoints = 0, info = "Check something" }
+>>>>>>> Stashed changes
         };
+        static Random r;
+        static int cycle,period1,period2,c,p1,p2;
+        static bool redefine=false;
 
 
 
-        static void start_game(string t1, string t2, int rounds, out int p1, out int p2, out string winner, out Boolean[] lastAns1, out Boolean[] lastAns2) 
+        static void start_game(string t1, string t2, int rounds, out int p1, out int p2, out string winner, out bool[] lastAns1, out bool[] lastAns2) 
         {
             int tempP1, tempP2;
 
-            Boolean ans1, ans2;
-            lastAns1 = new Boolean[rounds];
-            lastAns2 = new Boolean[rounds];
+            bool ans1, ans2;
+            lastAns1 = new bool[rounds];
+            lastAns2 = new bool[rounds];
 
             p1 = 0;
             p2 = 0;
 
             for (int i = 0; i < rounds; i++)
             {
+                if (i == 0)
+                    redefine = true;
+                else
+                    redefine = false;
+
                 ans1 = check_tactics(t1,lastAns1,lastAns2,i);
                 ans2 = check_tactics(t2, lastAns2, lastAns1, i);
 
@@ -77,9 +105,9 @@ namespace tactics_battle
 
 
 
-        static Boolean check_tactics(string t, Boolean[] lastAnsMy, Boolean[] lastAnsEnemy, int curTurn) 
+        static bool check_tactics(string t, bool[] lastAnsMy, bool[] lastAnsEnemy, int curTurn) 
         {
-            Boolean ans=false;
+            bool ans=false;
 
             switch (t)
             {
@@ -102,31 +130,13 @@ namespace tactics_battle
                     ans = Forgiving_Tit_for_Tat_T(lastAnsEnemy, curTurn);
                     break;
                 case "Cy":
-                    ans = Cycled_T(curTurn,5);
-                    break;
-                case "CyL":
-                    ans = Cycled_T(curTurn,20);
-                    break;
-                case "CySL":
-                    ans = Cycled_T(curTurn, 50);
+                    ans = Cycled_T(curTurn);
                     break;
                 case "CSS":
-                    ans = Cycled_Single_Shot(curTurn, 5);
-                    break;
-                case "CSSL":
-                    ans = Cycled_Single_Shot(curTurn, 20);
-                    break;
-                case "CSSSL":
-                    ans = Cycled_Single_Shot(curTurn, 50);
+                    ans = Cycled_Single_Shot(curTurn);
                     break;
                 case "RSS":
-                    ans = Reversed_Single_Shot(curTurn, 5);
-                    break;
-                case "RSSL":
-                    ans = Reversed_Single_Shot(curTurn, 20);
-                    break;
-                case "RSSSL":
-                    ans = Reversed_Single_Shot(curTurn, 50);
+                    ans = Reversed_Single_Shot(curTurn);
                     break;
                 case "SM":
                     ans = Majority(lastAnsEnemy, 0.5f, curTurn);
@@ -144,7 +154,7 @@ namespace tactics_battle
 
 
 
-        static void get_points(Boolean ans1, Boolean ans2, out int p1, out int p2) 
+        static void get_points(bool ans1, bool ans2, out int p1, out int p2) 
         {
             if (ans1 && ans2)
             {
@@ -170,9 +180,8 @@ namespace tactics_battle
 
 
 
-        static Boolean Random_T() 
+        static bool Random_T() 
         {
-            Random r = new Random();
             int n = r.Next(1, 101);
 
             if (n<51)
@@ -187,49 +196,68 @@ namespace tactics_battle
 
 
 
+<<<<<<< Updated upstream
         static Boolean AlwaysC_T()
+=======
+        static bool Proverka()
+        {
+            int n = r.Next(1, 101);
+
+            if (n < 10)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+
+
+        static bool AlwaysC_T()
+>>>>>>> Stashed changes
         {
             return false;
         }
 
 
 
-        static Boolean AlwaysC_C()
+        static bool AlwaysC_C()
         {
             return true;
         }
 
 
 
-        static Boolean User_T(Boolean[] lastAnsEnemy, int curTurn)
+        static bool User_T(bool[] lastAnsEnemy, int curTurn)
         {
             if (curTurn!=0)
             {
                 if (lastAnsEnemy[curTurn-1])
                 {
-                    Console.WriteLine("Рішення супротивника: C");
+                    Console.WriteLine("Opponent cooperated");
                 }
                 else
                 {
-                    Console.WriteLine("Рішення супротивника: T");
+                    Console.WriteLine("Opponent betrayed");
                 }
             }
             else
             {
-                Console.WriteLine("Гра розпочалася!");
+                Console.WriteLine("Game started!");
             }
 
-            Console.WriteLine("Раунд "+curTurn);
+            Console.WriteLine("Round "+curTurn);
 
-            Console.WriteLine("Співпрацювати(C) чи зрадити(T):");
             string a = Console.ReadLine();
-            while (a!= "C" && a!= "T")
+            while (a!= "c" && a!= "t")
             {
-                Console.WriteLine("Введіть на англійській розкладці або C(співпрацювати) або T(зрадити):");
+                Console.WriteLine("Enter c - cooperate or t - betray:");
                 a = Console.ReadLine();
             }
 
-            if (a=="C")
+            if (a=="c")
             {
                 return true;
             }
@@ -241,7 +269,7 @@ namespace tactics_battle
 
 
 
-        static Boolean Tit_for_Tat_T(Boolean[] lastAnsEnemy, int curTurn) 
+        static bool Tit_for_Tat_T(bool[] lastAnsEnemy, int curTurn) 
         {
             if (curTurn==0)
             {
@@ -259,9 +287,18 @@ namespace tactics_battle
 
 
 
-        static Boolean Cycled_Single_Shot(int curTurn, int cycle)
+        static bool Cycled_Single_Shot(int curTurn)
         {
-            if (curTurn % cycle == 0)
+            if (period1 == -1)
+            {
+                Console.WriteLine("Input length of the period: ");
+                period1 = int.Parse(Console.ReadLine());
+            }
+
+            if (redefine)
+                p1 = r.Next(0, period1);
+
+            if (curTurn % period1 == p1)
             {
                 return false;
             }
@@ -273,9 +310,18 @@ namespace tactics_battle
 
 
 
-        static Boolean Reversed_Single_Shot(int curTurn, int cycle)
+        static bool Reversed_Single_Shot(int curTurn)
         {
-            if (curTurn % cycle == 0)
+            if (period2 == -1)
+            {
+                Console.WriteLine("Input length of the period: ");
+                period2 = int.Parse(Console.ReadLine());
+            }
+
+            if(redefine)
+                p2 = r.Next(0, period2);
+
+            if (curTurn % period2 == p2)
             {
                 return true;
             }
@@ -287,7 +333,7 @@ namespace tactics_battle
 
 
 
-        static Boolean Majority(Boolean[] lastAnsEnemy, float percentage, int curTurn) 
+        static bool Majority(bool[] lastAnsEnemy, float percentage, int curTurn) 
         {
             float coop = 0f;
 
@@ -315,9 +361,18 @@ namespace tactics_battle
 
 
 
-        static Boolean Cycled_T(int curTurn, int period) 
+        static bool Cycled_T(int curTurn) 
         {
-            int p = curTurn / period;
+            if (cycle == -1)
+            {
+                Console.WriteLine("Input length of the period: ");
+                cycle = int.Parse(Console.ReadLine());
+            }
+
+            if (redefine)
+                c = r.Next(0, cycle * 2);
+
+            int p = (curTurn+(cycle*2)-c) / cycle;
 
             if (p % 2 == 1)
             {
@@ -331,7 +386,7 @@ namespace tactics_battle
 
 
 
-        static Boolean Forgiving_Tit_for_Tat_T(Boolean[] lastAnsEnemy, int curTurn)
+        static bool Forgiving_Tit_for_Tat_T(bool[] lastAnsEnemy, int curTurn)
         {
             if (curTurn == 0)
             {
@@ -339,10 +394,8 @@ namespace tactics_battle
             }
             else if (lastAnsEnemy[curTurn - 1] == false)
             {
-                Random r = new Random();
-
-                int chance = r.Next(1, 11);
-                if (chance == 1)
+                int chance = r.Next(1, 101);
+                if (chance < 21)
                 {
                     return true;
                 }
@@ -359,7 +412,7 @@ namespace tactics_battle
 
 
 
-        static Boolean Tester_T(Boolean[] lastAnsEnemy, int curTurn)
+        static bool Tester_T(bool[] lastAnsEnemy, int curTurn)
         {
             if (curTurn == 0)
             {
@@ -385,7 +438,7 @@ namespace tactics_battle
 
 
 
-        static void outputResult(string tactica, int rounds, Boolean[] res) 
+        static void outputResult(string tactica, int rounds, bool[] res) 
         {
             Console.Write(tactica + ": \t");
             for (int i = 0; i < rounds; i++)
@@ -403,116 +456,169 @@ namespace tactics_battle
         }
 
 
+        static void initializeTournament() 
+        {
+            int rounds = 0, points1, points2;
+
+            Console.WriteLine("How many rounds do you want to make?");
+            while (rounds == 0)
+            {
+                try
+                {
+                    rounds = int.Parse(Console.ReadLine());
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("Error!");
+                }
+            }
+
+            bool[] res1 = new bool[rounds];
+            bool[] res2 = new bool[rounds];
+
+            Console.WriteLine("Input short name of the first tactics: ");
+            string tactica1 = Console.ReadLine();
+            Console.WriteLine("Input short name of the second tactics: ");
+            string tactica2 = Console.ReadLine();
+            Console.WriteLine(" ");
+
+            string winner;
+            start_game(tactica1, tactica2, rounds, out points1, out points2, out winner, out res1, out res2);
+
+            outputResult(tactica1, rounds, res1);
+            outputResult(tactica2, rounds, res2);
+            Console.WriteLine(" ");
+
+            Console.WriteLine("Tactics " + tactica1 + " got: " + points1);
+            Console.WriteLine("Tactics " + tactica2 + " got: " + points2);
+            Console.WriteLine("Winner " + winner);
+            Console.WriteLine(" ");
+
+            rounds = 0;
+        }
+
+
+        static void initializeMultipleTournaments() 
+        {
+            int rounds = 0, tournaments=0;
+
+            Console.WriteLine("How many tournaments do you want: ");
+            tournaments = int.Parse(Console.ReadLine());
+
+            Console.WriteLine("How many rounds do you want to make?");
+            while (rounds == 0)
+            {
+                try
+                {
+                    rounds = int.Parse(Console.ReadLine());
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("Error!");
+                }
+            }
+
+            Console.WriteLine("Input short name of the first tactics: ");
+            string tactica1 = Console.ReadLine();
+            Console.WriteLine("Input short name of the second tactics: ");
+            string tactica2 = Console.ReadLine();
+            Console.WriteLine(" ");
+
+            for (int i = 1; i < tournaments + 1; i++)
+            {
+                bool[] res1 = new bool[rounds];
+                bool[] res2 = new bool[rounds];
+                string winner;
+                int points1, points2;
+
+                start_game(tactica1, tactica2, rounds, out points1, out points2, out winner, out res1, out res2);
+
+                Console.WriteLine(" ");
+                Console.WriteLine("-------");
+                Console.WriteLine(" ");
+                Console.WriteLine("Tournament " + i);
+
+                outputResult(tactica1, rounds, res1);
+                outputResult(tactica2, rounds, res2);
+                Console.WriteLine(" ");
+
+                Console.WriteLine("Tactics " + tactica1 + " got: " + points1);
+                Console.WriteLine("Tactics " + tactica2 + " got: " + points2);
+                Console.WriteLine("Winner " + winner);
+                Console.WriteLine(" ");
+            }
+        }
+
+
+        static void outputTactics() 
+        {
+            Console.WriteLine("List of all tactics: ");
+            Console.WriteLine(" ");
+
+            for (int i = 0; i < tactics.Length; i++)
+            {
+                Console.WriteLine(i + ") Name: " + tactics[i].name + "; short name: " + tactics[i].shortName);
+                Console.WriteLine("Explanation: " + tactics[i].info);
+            }
+        }
+
+
 
         static void Main(string[] args)
         {
-            int rounds=0, points1, points2;
-            string tactica1, tactica2, winner, ans;
-            Boolean con = true, wrong=false;
+            string ans="";
+            r = new Random();
 
-            Console.WriteLine("Щоб провести турнір тактик введіть С");
-            Console.WriteLine("Щоб покинути програму введіть E");
-            Console.WriteLine("Щоб показати інформацію про тактики введіть I");
-            Console.WriteLine("Щоб показати лише скорочені тактик введіть S");
-            Console.WriteLine("Щоб ще раз побачити команди введіть H");
-            Console.WriteLine("Введіть команду: ");
-            ans = Console.ReadLine();
-            Console.WriteLine(" ");
+            Console.WriteLine("To make a single tournament between two tactics - t");
+            Console.WriteLine("To make a multiple tournaments between two tactics - m");
+            Console.WriteLine("To exit a program - x");
+            Console.WriteLine("To show info about all tactics - i");
+            Console.WriteLine("Show commands available - h");
 
-            while (con)
+            while (ans!="x")
             {
+                cycle = -1;
+                period1 = -1;
+                period2 = -1;
+
+                Console.WriteLine(" ");
+                Console.WriteLine("------");
+                Console.WriteLine(" ");
+                Console.WriteLine("Input command: ");
+                ans = Console.ReadLine();
+                Console.WriteLine(" ");
+
                 switch (ans)
                 {
-                    case "C":
-                        Console.WriteLine("Скільки раундів ви хочете провести?");
-                        while (rounds == 0)
-                        {
-                            try
-                            {
-                                rounds = int.Parse(Console.ReadLine());
-                            }
-                            catch (Exception)
-                            {
-                                Console.WriteLine("Помилка!");
-                            }
-                        }
+                    case "t":
+                        initializeTournament();
 
-                        Boolean[] res1 = new Boolean[rounds];
-                        Boolean[] res2 = new Boolean[rounds];
-
-                        Console.WriteLine("Перша тактика: ");
-                        tactica1 = Console.ReadLine();
-                        Console.WriteLine("Друга тактика: ");
-                        tactica2 = Console.ReadLine();
-                        Console.WriteLine(" ");
-
-                        start_game(tactica1, tactica2, rounds, out points1, out points2, out winner, out res1, out res2);
-
-                        outputResult(tactica1, rounds, res1);
-                        outputResult(tactica2, rounds, res2);
-                        Console.WriteLine(" ");
-
-                        Console.WriteLine("Тактика " + tactica1 + " набрала:\t " + points1);
-                        Console.WriteLine("Тактика " + tactica2 + " набрала:\t " + points2);
-                        Console.WriteLine("Переможець:\t " + winner);
-                        Console.WriteLine(" ");
-
-                        rounds = 0;
                         break;
 
-                    case "E":
-                        con = false;
+                    case "m":
+                        initializeMultipleTournaments();
+
                         break;
 
-                    case "H":
-                        Console.WriteLine("Щоб провести турнір тактик введіть С");
-                        Console.WriteLine("Щоб покинути програму введіть E");
-                        Console.WriteLine("Щоб показати інформацію про тактики введіть I");
-                        Console.WriteLine("Щоб показати лише скорочені тактик введіть S");
-                        Console.WriteLine("Щоб ще раз побачити команди введіть H");
+                    case "h":
+                        Console.WriteLine("To make a single tournament between two tactics - t");
+                        Console.WriteLine("To exit a program - x");
+                        Console.WriteLine("To show info about tactics - i");
+                        Console.WriteLine("Show commands available - h");
+
                         break;
 
-                    case "I":
-                        Console.WriteLine("Список всіх доступних тактик: ");
-                        Console.WriteLine(" ");
+                    case "i":
+                        outputTactics();
 
-                        for (int i = 0; i < tactics.Length; i++)
-                        {
-                            Console.WriteLine("Назва: "+tactics[i].name);
-                            Console.WriteLine("Скорочена назва: " + tactics[i].shortName);
-                            Console.WriteLine("Пояснення: " + tactics[i].info);
-                            Console.WriteLine(" ");
-                        }
                         break;
 
-                    case "S":
-                        Console.WriteLine("Скорочені назви всіх тактик: ");
-                        Console.WriteLine(" ");
-
-                        for (int i = 0; i < tactics.Length; i++)
-                        {
-                            Console.WriteLine(tactics[i].shortName);
-                        }
-                        Console.WriteLine(" ");
+                    case "x":
                         break;
 
                     default:
-                        wrong = true;
+                        Console.WriteLine("Unknown command entered!");
                         break;
-                }
-
-                if (wrong)
-                {
-                    Console.WriteLine("Введена невідома команда. Введіть ще раз: ");
-                    ans = Console.ReadLine();
-                    wrong = false;
-                    Console.WriteLine(" ");
-                }
-                else if (con)
-                {
-                    Console.WriteLine("Введіть подальші команди: ");
-                    ans = Console.ReadLine();
-                    Console.WriteLine(" ");
                 }
             }
         }
