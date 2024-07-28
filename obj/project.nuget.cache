@@ -1,14 +1,15 @@
 {
   "version": 2,
-<<<<<<< Updated upstream
-  "dgSpecHash": "WCfArqnKtSgABcUVMS6pcpNWsO7R4TvUPP9epnGgTztcMAaCxg5fU55nIOlF0J3lKw85fcrpUd0wgYutMHGlNw==",
-=======
   "dgSpecHash": "ZXh+jG0eP20=",
->>>>>>> Stashed changes
   "success": true,
-  "projectFilePath": "K:\\Andrii\\Мои проекты\\tactics_battle\\Tactics_Battle\\tactics_battle.csproj",
-  "expectedPackageFiles": [
-    "C:\\Users\\1\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\5.0.17\\microsoft.netcore.app.host.win-x64.5.0.17.nupkg.sha512"
-  ],
-  "logs": []
+  "projectFilePath": "K:\\Andrii\\Мои проекты\\tactics_battle\\tactics_battle\\tactics_battle.csproj",
+  "expectedPackageFiles": [],
+  "logs": [
+    {
+      "code": "Undefined",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Ошибка чтения файла кэша K:\\Andrii\\Мои проекты\\tactics_battle\\tactics_battle\\obj\\project.nuget.cache: Invalid property identifier character: <. Path 'version', line 3, position 0."
+    }
+  ]
 }

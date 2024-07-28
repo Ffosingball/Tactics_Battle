@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "K:\\Andrii\\Мои проекты\\tactics_battle\\Tactics_Battle\\tactics_battle.csproj": {}
+    "K:\\Andrii\\Мои проекты\\tactics_battle\\tactics_battle\\tactics_battle.csproj": {}
   },
   "projects": {
-    "K:\\Andrii\\Мои проекты\\tactics_battle\\Tactics_Battle\\tactics_battle.csproj": {
+    "K:\\Andrii\\Мои проекты\\tactics_battle\\tactics_battle\\tactics_battle.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "K:\\Andrii\\Мои проекты\\tactics_battle\\Tactics_Battle\\tactics_battle.csproj",
+        "projectUniqueName": "K:\\Andrii\\Мои проекты\\tactics_battle\\tactics_battle\\tactics_battle.csproj",
         "projectName": "tactics_battle",
-        "projectPath": "K:\\Andrii\\Мои проекты\\tactics_battle\\Tactics_Battle\\tactics_battle.csproj",
+        "projectPath": "K:\\Andrii\\Мои проекты\\tactics_battle\\tactics_battle\\tactics_battle.csproj",
         "packagesPath": "C:\\Users\\1\\.nuget\\packages\\",
-        "outputPath": "K:\\Andrii\\Мои проекты\\tactics_battle\\Tactics_Battle\\obj\\",
+        "outputPath": "K:\\Andrii\\Мои проекты\\tactics_battle\\tactics_battle\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -59,22 +59,12 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.NETCore.App.Host.win-x64",
-              "version": "[5.0.17, 5.0.17]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-<<<<<<< Updated upstream
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.202\\RuntimeIdentifierGraph.json"
-=======
           "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.302\\RuntimeIdentifierGraph.json"
->>>>>>> Stashed changes
         }
       }
     }

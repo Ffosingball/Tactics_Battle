@@ -1,6 +1,8 @@
 ﻿using Microsoft.VisualBasic.FileIO;
 using System;
 using System.Reflection;
+using System.IO;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace tactics_battle
 {
@@ -15,28 +17,6 @@ namespace tactics_battle
 
     class Program
     {
-<<<<<<< Updated upstream
-        static public Record[] tactics = new Record[18]
-        {
-            new Record { name = "Random", shortName = "R", totalPoints = 0, info = "Рандомно співпрацює або зраджує" },
-            new Record { name = "Tit for Tat", shortName = "TfT", totalPoints = 0, info = "Зазвича співпрацює, але якщо його зрадили у минулому ході то він зрадить у наступному" },
-            new Record { name = "AlwaysC", shortName = "C", totalPoints = 0, info = "Завжди співпрацює" },
-            new Record { name = "AlwaysT", shortName = "T", totalPoints = 0, info = "Завжди зраджує" },
-            new Record { name = "Tester", shortName = "Te", totalPoints = 0, info = "У першому ході співпрацює, у другому зраджує і якщо у наступному ході супротивник також зраджує, то далі всю гру співпрацює. Якщо супротивник на третьому ході співпрацює, то він усі наступні ходи буде зраджувати" },
-            new Record { name = "User", shortName = "U", totalPoints = 0, info = "Якщо ви хочете пограти проти інших тактик" },
-            new Record { name = "Cycled", shortName = "Cy", totalPoints = 0, info = "Циклічно п'ять ходів зраджує потім п'ять ходів співпрацює" },
-            new Record { name = "Cycled Long", shortName = "CyL", totalPoints = 0, info = "Циклічно двадцять ходів зраджує потім двадцять ходів співпрацює" },
-            new Record { name = "Cycled Super Long", shortName = "CySL", totalPoints = 0, info = "Циклічно п'ятьдесят ходів зраджує потім п'ятьдесят ходів співпрацює" },
-            new Record { name = "Cycled Single Shot", shortName = "CSS", totalPoints = 0, info = "Зраджує через кожні п'ять ходів" },
-            new Record { name = "Cycled Single Shot Long", shortName = "CSSL", totalPoints = 0, info = "Зраджує через кожні двадцять ходів" },
-            new Record { name = "Cycled Single Shot Super Long", shortName = "CSSSL", totalPoints = 0, info = "Зраджує через кожні п'ятьдесят ходів" },
-            new Record { name = "Forgiving Tit for Tat", shortName = "FTfT", totalPoints = 0, info = "Зазвича співпрацює, але якщо його зрадили у минулому ході то він зрадить у наступному з шансом 90%" },
-            new Record { name = "Reversed Single Shot", shortName = "RSS", totalPoints = 0, info = "Співпрацює лише кожен п'ятий хід" },
-            new Record { name = "Reversed Single Shot Long", shortName = "RSSL", totalPoints = 0, info = "Співпрацює лише кожен двадцятий хід" },
-            new Record { name = "Reversed Single Shot Super Long", shortName = "RSSSL", totalPoints = 0, info = "Співпрацює лише кожен п'ятьдесятий хід" },
-            new Record { name = "Soft Majority", shortName = "SM", totalPoints = 0, info = "Співпрацює якщо супротивник більше половини ходів співпрацював, інакше буде зраджувати" },
-            new Record { name = "Hard Majority", shortName = "HM", totalPoints = 0, info = "Співпрацює якщо супротивник більше 75% ходів співпрацював, інакше буде зраджувати" }
-=======
         static Record[] tactics = new Record[13]
         {
             new Record { name = "Random", shortName = "R", totalPoints = 0, info = "Randomly cooperate or betray" },
@@ -52,10 +32,10 @@ namespace tactics_battle
             new Record { name = "Soft Majority", shortName = "SM", totalPoints = 0, info = "Cooperates if the opponent has cooperated for more than half of the moves, otherwise he will betray" },
             new Record { name = "Hard Majority", shortName = "HM", totalPoints = 0, info = "Cooperates if the opponent has cooperated for more than 75% of the moves, otherwise he will betray" },
             new Record { name = "Check", shortName = "P", totalPoints = 0, info = "Check something" }
->>>>>>> Stashed changes
         };
         static Random r;
         static int cycle,period1,period2,c,p1,p2;
+        static int majorCycle;
         static bool redefine=false;
 
 
@@ -195,10 +175,6 @@ namespace tactics_battle
         }
 
 
-
-<<<<<<< Updated upstream
-        static Boolean AlwaysC_T()
-=======
         static bool Proverka()
         {
             int n = r.Next(1, 101);
@@ -216,7 +192,6 @@ namespace tactics_battle
 
 
         static bool AlwaysC_T()
->>>>>>> Stashed changes
         {
             return false;
         }
@@ -291,7 +266,7 @@ namespace tactics_battle
         {
             if (period1 == -1)
             {
-                Console.WriteLine("Input length of the period: ");
+                Console.WriteLine("Input length of the period for the CSS: ");
                 period1 = int.Parse(Console.ReadLine());
             }
 
@@ -314,7 +289,7 @@ namespace tactics_battle
         {
             if (period2 == -1)
             {
-                Console.WriteLine("Input length of the period: ");
+                Console.WriteLine("Input length of the period for RSS: ");
                 period2 = int.Parse(Console.ReadLine());
             }
 
@@ -365,7 +340,7 @@ namespace tactics_battle
         {
             if (cycle == -1)
             {
-                Console.WriteLine("Input length of the period: ");
+                Console.WriteLine("Input length of the cycle for Cy: ");
                 cycle = int.Parse(Console.ReadLine());
             }
 
@@ -395,7 +370,7 @@ namespace tactics_battle
             else if (lastAnsEnemy[curTurn - 1] == false)
             {
                 int chance = r.Next(1, 101);
-                if (chance < 21)
+                if (chance < 11)
                 {
                     return true;
                 }
@@ -438,18 +413,21 @@ namespace tactics_battle
 
 
 
-        static void outputResult(string tactica, int rounds, bool[] res) 
+        static void outputResult(string tactica, int rounds, bool[] res, out string ans) 
         {
             Console.Write(tactica + ": \t");
+            ans = "";
             for (int i = 0; i < rounds; i++)
             {
                 if (res[i])
                 {
                     Console.Write("C");
+                    ans = ans + "C";
                 }
                 else
                 {
                     Console.Write("T");
+                    ans = ans + "T";
                 }
             }
             Console.Write("\n");
@@ -459,6 +437,9 @@ namespace tactics_battle
         static void initializeTournament() 
         {
             int rounds = 0, points1, points2;
+
+            string[] writeInFile = new string[3];
+            writeInFile[0] = "singleTournament,"+majorCycle;
 
             Console.WriteLine("How many rounds do you want to make?");
             while (rounds == 0)
@@ -485,9 +466,14 @@ namespace tactics_battle
             string winner;
             start_game(tactica1, tactica2, rounds, out points1, out points2, out winner, out res1, out res2);
 
-            outputResult(tactica1, rounds, res1);
-            outputResult(tactica2, rounds, res2);
+            string ans1, ans2;
+            outputResult(tactica1, rounds, res1, out ans1);
+            outputResult(tactica2, rounds, res2, out ans2);
             Console.WriteLine(" ");
+
+            writeInFile[1] = tactica1+","+points1+","+ans1;
+            writeInFile[2] = tactica2 + "," + points2 + "," + ans2;
+            File.AppendAllLines("dataResults.csv", writeInFile);
 
             Console.WriteLine("Tactics " + tactica1 + " got: " + points1);
             Console.WriteLine("Tactics " + tactica2 + " got: " + points2);
@@ -501,6 +487,8 @@ namespace tactics_battle
         static void initializeMultipleTournaments() 
         {
             int rounds = 0, tournaments=0;
+
+            File.AppendAllText("dataResults.csv","multipleTournament," + majorCycle+"\n");
 
             Console.WriteLine("How many tournaments do you want: ");
             tournaments = int.Parse(Console.ReadLine());
@@ -531,6 +519,9 @@ namespace tactics_battle
                 string winner;
                 int points1, points2;
 
+                string[] writeInFile = new string[3];
+                writeInFile[0] = ""+i;
+
                 start_game(tactica1, tactica2, rounds, out points1, out points2, out winner, out res1, out res2);
 
                 Console.WriteLine(" ");
@@ -538,9 +529,14 @@ namespace tactics_battle
                 Console.WriteLine(" ");
                 Console.WriteLine("Tournament " + i);
 
-                outputResult(tactica1, rounds, res1);
-                outputResult(tactica2, rounds, res2);
+                string ans1, ans2;
+                outputResult(tactica1, rounds, res1, out ans1);
+                outputResult(tactica2, rounds, res2, out ans2);
                 Console.WriteLine(" ");
+
+                writeInFile[1] = tactica1 + "," + points1 + "," + ans1;
+                writeInFile[2] = tactica2 + "," + points2 + "," + ans2;
+                File.AppendAllLines("dataResults.csv", writeInFile);
 
                 Console.WriteLine("Tactics " + tactica1 + " got: " + points1);
                 Console.WriteLine("Tactics " + tactica2 + " got: " + points2);
@@ -563,11 +559,46 @@ namespace tactics_battle
         }
 
 
+        //Добавить функцию с помощью которой можно просматривать данные с файла
+        //Добавить больше тактик. Найти где я спрашивал у них чатаГПТ и спросить ещё чтобы было штук 40
+        //Добавить функцию турнира где все тактики против друг друга соревнуються и выводиться отсортированый список тактик с общим кол-вом очков
+
 
         static void Main(string[] args)
         {
             string ans="";
             r = new Random();
+            majorCycle = 0;
+
+            int curSeans = 0;
+            if (File.Exists("dataResults.csv"))
+            {
+                string[] lines = File.ReadAllLines("dataResults.csv");
+
+                int pos = lines.Length - 1;
+                while (curSeans==0) 
+                {
+                    string[] line = lines[pos].Split(',');
+
+                    if (line.Length == 2) 
+                    {
+                        if (line[0] == "session") 
+                        {
+                            curSeans = int.Parse(line[1]);
+                            curSeans++;
+                        }
+                    }
+
+                    pos--;
+                }
+            }
+            else
+            {
+                File.Create("dataResults.csv").Close();
+                curSeans = 1;
+            }
+
+            File.AppendAllText("dataResults.csv", "session,"+curSeans+"\n");
 
             Console.WriteLine("To make a single tournament between two tactics - t");
             Console.WriteLine("To make a multiple tournaments between two tactics - m");
@@ -591,11 +622,13 @@ namespace tactics_battle
                 switch (ans)
                 {
                     case "t":
+                        majorCycle++;
                         initializeTournament();
 
                         break;
 
                     case "m":
+                        majorCycle++;
                         initializeMultipleTournaments();
 
                         break;
