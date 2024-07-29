@@ -1,8 +1,6 @@
-﻿using Microsoft.VisualBasic.FileIO;
-using System;
-using System.Reflection;
+﻿using System;
 using System.IO;
-using static System.Net.Mime.MediaTypeNames;
+using System.Collections.Generic;
 
 namespace tactics_battle
 {
@@ -10,6 +8,14 @@ namespace tactics_battle
     {
         public string name, shortName, info;
         public int totalPoints;
+
+        public Record(string name, string shortName, string info) 
+        {
+            totalPoints = 0;
+            this.name = name;
+            this.shortName = shortName;
+            this.info = info;
+        }
     }
 
 
@@ -17,32 +23,23 @@ namespace tactics_battle
 
     class Program
     {
-        static Record[] tactics = new Record[13]
-        {
-            new Record { name = "Random", shortName = "R", totalPoints = 0, info = "Randomly cooperate or betray" },
-            new Record { name = "Tit for Tat", shortName = "TfT", totalPoints = 0, info = "It usually cooperates, but if it was betrayed in the last turn, it will betray in the next" },
-            new Record { name = "AlwaysC", shortName = "C", totalPoints = 0, info = "Always cooperate" },
-            new Record { name = "AlwaysT", shortName = "T", totalPoints = 0, info = "Always betray" },
-            new Record { name = "Tester", shortName = "Te", totalPoints = 0, info = "In the first turn, it cooperates, in the second he betrays, and if the opponent also betrays on the third turn, it cooperates for the rest of the game. Otherwise, it will betray all subsequent turns" },
-            new Record { name = "User", shortName = "U", totalPoints = 0, info = "If you want to play against other tactics" },
-            new Record { name = "Cycled", shortName = "Cy", totalPoints = 0, info = "Cyclically given number of moves betrays then the same number of moves cooperates" },
-            new Record { name = "Cycled Single Shot", shortName = "CSS", totalPoints = 0, info = "Betrays after every specified number of moves" },
-            new Record { name = "Forgiving Tit for Tat", shortName = "FTfT", totalPoints = 0, info = "It usually cooperates, but if it was betrayed in the last turn, it will betray in the next move with 80% chance" },
-            new Record { name = "Reversed Single Shot", shortName = "RSS", totalPoints = 0, info = "Cooperate after every specified number of moves" },
-            new Record { name = "Soft Majority", shortName = "SM", totalPoints = 0, info = "Cooperates if the opponent has cooperated for more than half of the moves, otherwise he will betray" },
-            new Record { name = "Hard Majority", shortName = "HM", totalPoints = 0, info = "Cooperates if the opponent has cooperated for more than 75% of the moves, otherwise he will betray" },
-            new Record { name = "Check", shortName = "P", totalPoints = 0, info = "Check something" }
-        };
+        static Record[] tactics;
+
+        static Dictionary<string, Func<bool[],int,bool>> actionsToDo;
+
         static Random r;
         static int cycle,period1,period2,c,p1,p2;
         static int majorCycle;
-        static bool redefine=false;
+        static bool redefine=false,forGrudger=true, ansWSLS;
 
 
 
         static void start_game(string t1, string t2, int rounds, out int p1, out int p2, out string winner, out bool[] lastAns1, out bool[] lastAns2) 
         {
             int tempP1, tempP2;
+
+            forGrudger = true;
+            ansWSLS = true;
 
             bool ans1, ans2;
             lastAns1 = new bool[rounds];
@@ -58,8 +55,8 @@ namespace tactics_battle
                 else
                     redefine = false;
 
-                ans1 = check_tactics(t1,lastAns1,lastAns2,i);
-                ans2 = check_tactics(t2, lastAns2, lastAns1, i);
+                ans1 = actionsToDo[t1](lastAns2,i);
+                ans2 = actionsToDo[t2](lastAns1, i);
 
                 get_points(ans1, ans2, out tempP1, out tempP2);
                 p1 = p1 + tempP1;
@@ -75,61 +72,12 @@ namespace tactics_battle
             }
             else if (p1 == p2)
             {
-                winner = t1+" та "+t2;
+                winner = t1+" and "+t2;
             }
             else
             {
                 winner = t2;
             }
-        }
-
-
-
-        static bool check_tactics(string t, bool[] lastAnsMy, bool[] lastAnsEnemy, int curTurn) 
-        {
-            bool ans=false;
-
-            switch (t)
-            {
-                case "TfT":
-                    ans = Tit_for_Tat_T(lastAnsEnemy, curTurn);
-                    break;
-                case "C":
-                    ans = AlwaysC_C();
-                    break;
-                case "T":
-                    ans = AlwaysC_T();
-                    break;
-                case "Te":
-                    ans = Tester_T(lastAnsEnemy, curTurn);
-                    break;
-                case "U":
-                    ans = User_T(lastAnsEnemy, curTurn);
-                    break;
-                case "FTfT":
-                    ans = Forgiving_Tit_for_Tat_T(lastAnsEnemy, curTurn);
-                    break;
-                case "Cy":
-                    ans = Cycled_T(curTurn);
-                    break;
-                case "CSS":
-                    ans = Cycled_Single_Shot(curTurn);
-                    break;
-                case "RSS":
-                    ans = Reversed_Single_Shot(curTurn);
-                    break;
-                case "SM":
-                    ans = Majority(lastAnsEnemy, 0.5f, curTurn);
-                    break;
-                case "HM":
-                    ans = Majority(lastAnsEnemy, 0.75f, curTurn);
-                    break;
-                default:
-                    ans=Random_T();
-                    break;
-            }
-
-            return ans;
         }
 
 
@@ -160,7 +108,7 @@ namespace tactics_battle
 
 
 
-        static bool Random_T() 
+        static bool Random_T(bool[] lastAnsEnemy, int curTurn) 
         {
             int n = r.Next(1, 101);
 
@@ -175,30 +123,28 @@ namespace tactics_battle
         }
 
 
-        static bool Proverka()
+        static bool Proverka(bool[] lastAnsEnemy, int curTurn)
         {
-            int n = r.Next(1, 101);
-
-            if (n < 10)
+            if (curTurn < 10)
             {
-                return false;
+                return true;
             }
             else
             {
-                return true;
+                return false;
             }
         }
 
 
 
-        static bool AlwaysC_T()
+        static bool AlwaysC_T(bool[] lastAnsEnemy, int curTurn)
         {
             return false;
         }
 
 
 
-        static bool AlwaysC_C()
+        static bool AlwaysC_C(bool[] lastAnsEnemy, int curTurn)
         {
             return true;
         }
@@ -250,7 +196,42 @@ namespace tactics_battle
             {
                 return true;
             }
-            else if (lastAnsEnemy[curTurn-1]==false)
+            else if (lastAnsEnemy[curTurn-1])
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+
+
+        static bool Suspicious_Tit_for_Tat_T(bool[] lastAnsEnemy, int curTurn)
+        {
+            if (curTurn == 0)
+            {
+                return false;
+            }
+            else if (lastAnsEnemy[curTurn - 1])
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+
+        static bool Nice_Tit_for_Tat_T(bool[] lastAnsEnemy, int curTurn)
+        {
+            if (curTurn == 0 || curTurn==1)
+            {
+                return true;
+            }
+            else if (!lastAnsEnemy[curTurn - 1] && !lastAnsEnemy[curTurn - 2])
             {
                 return false;
             }
@@ -262,7 +243,39 @@ namespace tactics_battle
 
 
 
-        static bool Cycled_Single_Shot(int curTurn)
+        static bool Tit_for_Two_Tats_T(bool[] lastAnsEnemy, int curTurn)
+        {
+            if (curTurn == 0)
+            {
+                return true;
+            }
+            else if (curTurn>1)
+            {
+                if (!lastAnsEnemy[curTurn - 1] || !lastAnsEnemy[curTurn - 2])
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                if (!lastAnsEnemy[curTurn - 1])
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+        }
+
+
+
+        static bool Cycled_Single_Shot(bool[] lastAnsEnemy, int curTurn)
         {
             if (period1 == -1)
             {
@@ -285,7 +298,7 @@ namespace tactics_battle
 
 
 
-        static bool Reversed_Single_Shot(int curTurn)
+        static bool Reversed_Single_Shot(bool[] lastAnsEnemy, int curTurn)
         {
             if (period2 == -1)
             {
@@ -308,7 +321,7 @@ namespace tactics_battle
 
 
 
-        static bool Majority(bool[] lastAnsEnemy, float percentage, int curTurn) 
+        static bool S_Majority(bool[] lastAnsEnemy, int curTurn) 
         {
             float coop = 0f;
 
@@ -324,7 +337,34 @@ namespace tactics_battle
             {
                 return true;
             }
-            else if (coop/curTurn >= percentage)
+            else if (coop/curTurn >= 0.5f)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+
+        static bool H_Majority(bool[] lastAnsEnemy, int curTurn)
+        {
+            float coop = 0f;
+
+            for (int i = 0; i < curTurn + 1; i++)
+            {
+                if (lastAnsEnemy[i] == true)
+                {
+                    coop++;
+                }
+            }
+
+            if (curTurn == 0)
+            {
+                return true;
+            }
+            else if (coop / curTurn >= 0.75f)
             {
                 return true;
             }
@@ -336,7 +376,7 @@ namespace tactics_battle
 
 
 
-        static bool Cycled_T(int curTurn) 
+        static bool Cycled_T(bool[] lastAnsEnemy, int curTurn) 
         {
             if (cycle == -1)
             {
@@ -370,7 +410,7 @@ namespace tactics_battle
             else if (lastAnsEnemy[curTurn - 1] == false)
             {
                 int chance = r.Next(1, 101);
-                if (chance < 11)
+                if (chance < 16)
                 {
                     return true;
                 }
@@ -408,6 +448,40 @@ namespace tactics_battle
             else
             {
                 return false;
+            }
+        }
+
+
+
+        static bool Grudger(bool[] lastAnsEnemy, int curTurn) 
+        {
+            if (curTurn == 0)
+                return true;
+            else if (lastAnsEnemy[curTurn-1] && forGrudger)
+                return true;
+            else 
+            {
+                forGrudger = false;
+                return false;
+            }
+        }
+
+
+        static bool Win_Stay_Loose_Shift(bool[] lastAnsEnemy, int curTurn) 
+        {
+            if (curTurn == 0)
+            {
+                ansWSLS = true;
+                return true;
+            }
+            else
+            {
+                if (lastAnsEnemy[curTurn - 1] != ansWSLS)
+                {
+                    ansWSLS = lastAnsEnemy[curTurn - 1];
+                }
+
+                return ansWSLS;
             }
         }
 
@@ -486,7 +560,7 @@ namespace tactics_battle
 
         static void initializeMultipleTournaments() 
         {
-            int rounds = 0, tournaments=0;
+            int rounds = 0, tournaments=0, avg1=0, avg2=0, won1=0, won2=0;
 
             File.AppendAllText("dataResults.csv","multipleTournament," + majorCycle+"\n");
 
@@ -524,6 +598,18 @@ namespace tactics_battle
 
                 start_game(tactica1, tactica2, rounds, out points1, out points2, out winner, out res1, out res2);
 
+                avg1 = avg1 + points1;
+                avg2 = avg2 + points2;
+
+                if (points1 > points2)
+                {
+                    won1++;
+                }
+                else if (points2 > points1)
+                {
+                    won2++;
+                }
+
                 Console.WriteLine(" ");
                 Console.WriteLine("-------");
                 Console.WriteLine(" ");
@@ -541,8 +627,16 @@ namespace tactics_battle
                 Console.WriteLine("Tactics " + tactica1 + " got: " + points1);
                 Console.WriteLine("Tactics " + tactica2 + " got: " + points2);
                 Console.WriteLine("Winner " + winner);
-                Console.WriteLine(" ");
             }
+
+            avg1 = avg1 / tournaments;
+            avg2 = avg2 / tournaments;
+
+            Console.WriteLine(" ");
+            Console.WriteLine("Tactics " + tactica1 + " average points is: " + avg1);
+            Console.WriteLine("Tactics " + tactica2 + " average points is: " + avg2);
+            Console.WriteLine("Tactics " + tactica1 + " won " + won1+" times!");
+            Console.WriteLine("Tactics " + tactica2 + " won " + won2+" times!");
         }
 
 
@@ -560,12 +654,57 @@ namespace tactics_battle
 
 
         //Добавить функцию с помощью которой можно просматривать данные с файла
-        //Добавить больше тактик. Найти где я спрашивал у них чатаГПТ и спросить ещё чтобы было штук 40
+        //Добавить больше тактик. Найти где я спрашивал у них чатаГПТ и спросить ещё чтобы было штук 40(January, Strat models in Axelrod)
         //Добавить функцию турнира где все тактики против друг друга соревнуються и выводиться отсортированый список тактик с общим кол-вом очков
+        //Если раундов больше чем 1000 то спросить записывать ли данные или нет, также не выводить все результат на экран
 
 
         static void Main(string[] args)
         {
+            tactics= new Record[18]
+            {
+                new Record("Random","R","Randomly cooperate or betray" ),
+                new Record ("Tit for Tat(Mirror)","TfT","It usually cooperates, but if it was betrayed in the last turn, it will betray in the next"),
+                new Record ("AlwaysC","C","Always cooperate"),
+                new Record ("AlwaysT","T","Always betray"),
+                new Record ("Tester","Te","In the first turn, it cooperates, in the second he betrays, and if the opponent also betrays on the third turn, it cooperates for the rest of the game. Otherwise, it will betray all subsequent turns" ),
+                new Record ("User","U","If you want to play against other tactics"),
+                new Record ("Cycled","Cy","Cyclically given number of moves betrays then the same number of moves cooperates" ),
+                new Record ("Cycled Single Shot","CSS","Betrays after every specified number of moves" ),
+                new Record ("Forgiving Tit for Tat","FTfT","It usually cooperates, but if it was betrayed in the last turn, it will betray in the next move with 85% chance" ),
+                new Record ("Nice Tit for Tat(Tit for Two Tats)","NTfT","Similar to Tit for Tat, but it begins by cooperating and continues to cooperate as long as the opponent does not betray twice in a row. If the opponent betrays twice in a row, Nice Tit for Tat betray permanently" ),
+                new Record ("Suspicious Tit for Tat","STfT","A variation of Tit for Tat, where it starts by betraying and then mirrors the opponent's previous move. This strategy is designed to initially avoid exploitation by betraying opponents" ),
+                new Record ("Two Tits for Tat","TTfT","Cooperates unless the opponent betray, in which case it betrays twice in a row" ),
+                new Record ("Reversed Single Shot","RSS","Cooperate after every specified number of moves" ),
+                new Record ("Soft Majority","SM","Cooperates if the opponent has cooperated for more than half of the moves, otherwise he will betray" ),
+                new Record ("Hard Majority","HM","Cooperates if the opponent has cooperated for more than 75% of the moves, otherwise he will betray" ),
+                new Record ("Grudger","G","This strategy cooperates until the opponent betray, after which it betrays for the remainder of the game" ),
+                new Record ("Win-Stay, Loose-Shift(Pavlov)","WSLS","This strategy (also known as Pavlov) starts with cooperation, then keeps cooperating as long as it receives the same outcome (win or lose). If the outcome changes, it switches to the opposite action." ),
+                new Record ("Check","Ch","Check something" )
+            };
+
+            actionsToDo = new Dictionary<string, Func<bool[], int, bool>>
+            {
+                { "R", Random_T },
+                { "TfT", Tit_for_Tat_T },
+                { "C", AlwaysC_C },
+                { "T", AlwaysC_T },
+                { "Te", Tester_T },
+                { "U", User_T },
+                { "FTfT", Forgiving_Tit_for_Tat_T },
+                { "NTfT", Nice_Tit_for_Tat_T },
+                { "STfT", Suspicious_Tit_for_Tat_T },
+                { "TTfT", Tit_for_Two_Tats_T },
+                { "Cy", Cycled_T },
+                { "Ch", Proverka },
+                { "CSS", Cycled_Single_Shot },
+                { "RSS", Reversed_Single_Shot },
+                { "SM", S_Majority },
+                { "HM", H_Majority },
+                { "G", Grudger },
+                { "WSLS", Win_Stay_Loose_Shift }
+            };
+
             string ans="";
             r = new Random();
             majorCycle = 0;
