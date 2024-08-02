@@ -1,17 +1,23 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace tactics_battle
 {
     class Record 
     {
         public string name, shortName, info;
-        public int totalPoints;
+        public int totalPoints, won, lost, minGot, maxGot, tie;
 
         public Record(string name, string shortName, string info) 
         {
             totalPoints = 0;
+            won = 0;
+            lost = 0;
+            tie = 0;
+            minGot = 999999999;
+            maxGot = 0;
             this.name = name;
             this.shortName = shortName;
             this.info = info;
@@ -30,7 +36,7 @@ namespace tactics_battle
         static Random r;
         static int cycle,period1,period2,c,p1,p2;
         static int majorCycle;
-        static bool redefine=false,forGrudger=true, ansWSLS;
+        static bool redefine=false,forGrudger=true, forFriedmanNice = true, forFriedmanSus = true, ansWSLS, forFriedmanVeryNice=true;
 
 
 
@@ -39,6 +45,9 @@ namespace tactics_battle
             int tempP1, tempP2;
 
             forGrudger = true;
+            forFriedmanNice = true;
+            forFriedmanSus=true;
+            forFriedmanVeryNice = true;
             ansWSLS = true;
 
             bool ans1, ans2;
@@ -123,7 +132,7 @@ namespace tactics_battle
         }
 
 
-        static bool Proverka(bool[] lastAnsEnemy, int curTurn)
+        static bool Proverka_T(bool[] lastAnsEnemy, int curTurn)
         {
             if (curTurn < 10)
             {
@@ -137,14 +146,14 @@ namespace tactics_battle
 
 
 
-        static bool AlwaysC_T(bool[] lastAnsEnemy, int curTurn)
+        static bool AlwaysD_T(bool[] lastAnsEnemy, int curTurn)
         {
             return false;
         }
 
 
 
-        static bool AlwaysC_C(bool[] lastAnsEnemy, int curTurn)
+        static bool AlwaysC_T(bool[] lastAnsEnemy, int curTurn)
         {
             return true;
         }
@@ -161,7 +170,7 @@ namespace tactics_battle
                 }
                 else
                 {
-                    Console.WriteLine("Opponent betrayed");
+                    Console.WriteLine("Opponent deflects");
                 }
             }
             else
@@ -172,9 +181,9 @@ namespace tactics_battle
             Console.WriteLine("Round "+curTurn);
 
             string a = Console.ReadLine();
-            while (a!= "c" && a!= "t")
+            while (a!= "c" && a!= "d")
             {
-                Console.WriteLine("Enter c - cooperate or t - betray:");
+                Console.WriteLine("Enter c - cooperate or d - deflect:");
                 a = Console.ReadLine();
             }
 
@@ -199,6 +208,26 @@ namespace tactics_battle
             else if (lastAnsEnemy[curTurn-1])
             {
                 return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+
+        static bool Joss_T(bool[] lastAnsEnemy, int curTurn)
+        {
+            if (curTurn == 0)
+            {
+                return true;
+            }
+            else if (lastAnsEnemy[curTurn - 1])
+            {
+                if(r.Next(1,101)<16)
+                    return false;
+                else
+                    return true;
             }
             else
             {
@@ -275,7 +304,7 @@ namespace tactics_battle
 
 
 
-        static bool Cycled_Single_Shot(bool[] lastAnsEnemy, int curTurn)
+        static bool Cycled_Single_Shot_T(bool[] lastAnsEnemy, int curTurn)
         {
             if (period1 == -1)
             {
@@ -298,7 +327,7 @@ namespace tactics_battle
 
 
 
-        static bool Reversed_Single_Shot(bool[] lastAnsEnemy, int curTurn)
+        static bool Reversed_Single_Shot_T(bool[] lastAnsEnemy, int curTurn)
         {
             if (period2 == -1)
             {
@@ -321,7 +350,7 @@ namespace tactics_battle
 
 
 
-        static bool S_Majority(bool[] lastAnsEnemy, int curTurn) 
+        static bool Soft_Majority_T(bool[] lastAnsEnemy, int curTurn) 
         {
             float coop = 0f;
 
@@ -348,7 +377,7 @@ namespace tactics_battle
         }
 
 
-        static bool H_Majority(bool[] lastAnsEnemy, int curTurn)
+        static bool Hard_Majority_T(bool[] lastAnsEnemy, int curTurn)
         {
             float coop = 0f;
 
@@ -453,7 +482,7 @@ namespace tactics_battle
 
 
 
-        static bool Grudger(bool[] lastAnsEnemy, int curTurn) 
+        static bool Grudger_T(bool[] lastAnsEnemy, int curTurn) 
         {
             if (curTurn == 0)
                 return true;
@@ -467,7 +496,61 @@ namespace tactics_battle
         }
 
 
-        static bool Win_Stay_Loose_Shift(bool[] lastAnsEnemy, int curTurn) 
+        static bool Friedman_T(bool[] lastAnsEnemy, int curTurn)
+        {
+            if (curTurn == 0)
+                return true;
+            else if (lastAnsEnemy[curTurn - 1] && forFriedmanSus)
+                return true;
+            else
+            {
+                forFriedmanSus = false;
+
+                if (r.Next(1, 101) < 16)
+                    return true;
+                else
+                    return false;
+            }
+        }
+
+
+        static bool Nice_Friedman_T(bool[] lastAnsEnemy, int curTurn)
+        {
+            if (curTurn == 0)
+                return true;
+            else if (lastAnsEnemy[curTurn - 1] && forFriedmanNice)
+                return true;
+            else
+            {
+                forFriedmanNice = false;
+
+                if (r.Next(1, 101) < 51)
+                    return true;
+                else
+                    return false;
+            }
+        }
+
+
+        static bool Very_Nice_Friedman_T(bool[] lastAnsEnemy, int curTurn)
+        {
+            if (curTurn == 0)
+                return true;
+            else if (lastAnsEnemy[curTurn - 1] && forFriedmanVeryNice)
+                return true;
+            else
+            {
+                forFriedmanVeryNice = false;
+
+                if (r.Next(1, 101) < 81)
+                    return true;
+                else
+                    return false;
+            }
+        }
+
+
+        static bool Win_Stay_Loose_Shift_T(bool[] lastAnsEnemy, int curTurn) 
         {
             if (curTurn == 0)
             {
@@ -487,21 +570,35 @@ namespace tactics_battle
 
 
 
-        static void outputResult(string tactica, int rounds, bool[] res, out string ans) 
+        static void outputResult(string tactica, int rounds, bool[] res, out string ans, bool showOutput=true) 
         {
             Console.Write(tactica + ": \t");
             ans = "";
             for (int i = 0; i < rounds; i++)
             {
-                if (res[i])
+                if (rounds < 1000 && showOutput)
                 {
-                    Console.Write("C");
-                    ans = ans + "C";
+                    if (res[i])
+                    {
+                        Console.Write("C");
+                        ans = ans + "C";
+                    }
+                    else
+                    {
+                        Console.Write("D");
+                        ans = ans + "D";
+                    }
                 }
-                else
+                else 
                 {
-                    Console.Write("T");
-                    ans = ans + "T";
+                    if (res[i])
+                    {
+                        ans = ans + "C";
+                    }
+                    else
+                    {
+                        ans = ans + "D";
+                    }
                 }
             }
             Console.Write("\n");
@@ -511,6 +608,7 @@ namespace tactics_battle
         static void initializeTournament() 
         {
             int rounds = 0, points1, points2;
+            bool showAnswers=true;
 
             string[] writeInFile = new string[3];
             writeInFile[0] = "singleTournament,"+majorCycle;
@@ -545,8 +643,9 @@ namespace tactics_battle
             outputResult(tactica2, rounds, res2, out ans2);
             Console.WriteLine(" ");
 
-            writeInFile[1] = tactica1+","+points1+","+ans1;
+            writeInFile[1] = tactica1 + "," + points1 + "," + ans1;
             writeInFile[2] = tactica2 + "," + points2 + "," + ans2;
+
             File.AppendAllLines("dataResults.csv", writeInFile);
 
             Console.WriteLine("Tactics " + tactica1 + " got: " + points1);
@@ -640,6 +739,297 @@ namespace tactics_battle
         }
 
 
+
+        static void grandMultipleTournaments() 
+        {
+            int rounds = 0, tournaments = 0;
+
+            File.AppendAllText("dataResults.csv", "grandMultipleTournament," + majorCycle + "\n");
+
+            Console.WriteLine("How many tournaments do you want: ");
+            tournaments = int.Parse(Console.ReadLine());
+
+            Console.WriteLine("How many rounds do you want to make?");
+            while (rounds == 0)
+            {
+                try
+                {
+                    rounds = int.Parse(Console.ReadLine());
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("Error!");
+                }
+            }
+
+            if (cycle == -1)
+            {
+                Console.WriteLine("Input length of the cycle for Cy: ");
+                cycle = int.Parse(Console.ReadLine());
+            }
+
+            if (period1 == -1)
+            {
+                Console.WriteLine("Input length of the period for the CSS: ");
+                period1 = int.Parse(Console.ReadLine());
+            }
+
+            if (period2 == -1)
+            {
+                Console.WriteLine("Input length of the period for RSS: ");
+                period2 = int.Parse(Console.ReadLine());
+            }
+
+            for (int i = 1; i < tactics.Length; i++)
+            {
+                tactics[i].totalPoints = 0;
+                tactics[i].won = 0;
+                tactics[i].lost = 0;
+                tactics[i].minGot = 999999999;
+                tactics[i].maxGot = 0;
+            }
+
+            for (int k = 1; k < tactics.Length; k++)
+            {
+                string tactica1 = tactics[k].shortName;
+
+                Console.WriteLine(" ");
+                Console.WriteLine("---------");
+                Console.WriteLine(" ");
+                Console.WriteLine("Tournaments of "+tactica1);
+
+                for (int j = k+1; j < tactics.Length; j++)
+                {
+                    string tactica2 = tactics[j].shortName;
+                    for (int i = 1; i < tournaments + 1; i++)
+                    {
+                        bool[] res1 = new bool[rounds];
+                        bool[] res2 = new bool[rounds];
+                        string winner;
+                        int points1, points2;
+
+                        string[] writeInFile = new string[3];
+                        writeInFile[0] = tactica1+","+tactica2 +","+ i;
+
+                        start_game(tactica1, tactica2, rounds, out points1, out points2, out winner, out res1, out res2);
+
+
+                        tactics[k].totalPoints = tactics[k].totalPoints + points1;
+                        tactics[j].totalPoints = tactics[j].totalPoints + points2;
+
+                        if (tactics[k].minGot > points1)
+                            tactics[k].minGot = points1;
+
+                        if (tactics[k].maxGot < points1)
+                            tactics[k].maxGot = points1;
+
+                        if (tactics[j].minGot > points2)
+                            tactics[j].minGot = points2;
+
+                        if (tactics[j].maxGot < points2)
+                            tactics[j].maxGot = points2;
+
+                        if (points1 > points2)
+                        {
+                            tactics[k].won++;
+                            tactics[j].lost++;
+                        }
+                        else if (points2 > points1)
+                        {
+                            tactics[j].won++;
+                            tactics[k].lost++;
+                        }
+                        else if (points1 == points2) 
+                        {
+                            tactics[j].tie++;
+                            tactics[k].tie++;
+                        }
+
+                        Console.WriteLine(" ");
+                        Console.WriteLine("Tournament " + i);
+
+                        string ans1, ans2;
+                        outputResult(tactica1, rounds, res1, out ans1, false);
+                        outputResult(tactica2, rounds, res2, out ans2, false);
+                        Console.WriteLine(" ");
+
+                        writeInFile[1] = tactica1 + "," + points1 + "," + ans1;
+                        writeInFile[2] = tactica2 + "," + points2 + "," + ans2;
+                        File.AppendAllLines("dataResults.csv", writeInFile);
+
+                        Console.WriteLine("Tactics " + tactica1 + " got: " + points1);
+                        Console.WriteLine("Tactics " + tactica2 + " got: " + points2);
+                        Console.WriteLine("Winner " + winner);
+                    }
+                }
+            }
+
+            Console.WriteLine(" ");
+            Console.WriteLine("---------");
+            Console.WriteLine(" ");
+            Console.WriteLine("Results!");
+            File.AppendAllText("dataResults.csv", "results\n");
+
+            for (int i = 1; i < tactics.Length; i++)
+            {
+                int avgPoints = tactics[i].totalPoints / (tournaments * (tactics.Length-1));
+                File.AppendAllText("dataResults.csv", tactics[i].shortName+","+ tactics[i].totalPoints+","+ avgPoints+","+ tactics[i].won+","+ tactics[i].lost+","+ tactics[i].minGot+","+ tactics[i].maxGot+"," + tactics[i].tie+"\n");
+                Console.Write("Tactica " + tactics[i].name + "; total points: ");
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.Write(tactics[i].totalPoints);
+                Console.ResetColor();
+                Console.Write("; avarage points: ");
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                Console.Write(avgPoints);
+                Console.ResetColor();
+                Console.WriteLine(" won: "+ tactics[i].won+"; lost: "+tactics[i].lost + "; ties: " + tactics[i].tie + "; minimum points got: " + tactics[i].minGot + "; maximum points got: " + tactics[i].maxGot+"\n");
+            }
+        }
+
+
+        static void oneAgainstAllMultipleTournaments()
+        {
+            int rounds = 0, tournaments = 0;
+
+            File.AppendAllText("dataResults.csv", "oneAgainstAllMultipleTournament," + majorCycle + "\n");
+
+            Console.WriteLine("How many tournaments do you want: ");
+            tournaments = int.Parse(Console.ReadLine());
+
+            Console.WriteLine("How many rounds do you want to make?");
+            while (rounds == 0)
+            {
+                try
+                {
+                    rounds = int.Parse(Console.ReadLine());
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("Error!");
+                }
+            }
+
+            Console.WriteLine("Do you want to see all answers or not: ");
+            string show= Console.ReadLine();
+            bool show2 = show=="y";
+
+
+            Console.WriteLine("Input short name of the tactic: ");
+            string tactica1 = Console.ReadLine();
+
+            if (cycle == -1)
+            {
+                Console.WriteLine("Input length of the cycle for Cy: ");
+                cycle = int.Parse(Console.ReadLine());
+            }
+
+            if (period1 == -1)
+            {
+                Console.WriteLine("Input length of the period for the CSS: ");
+                period1 = int.Parse(Console.ReadLine());
+            }
+
+            if (period2 == -1)
+            {
+                Console.WriteLine("Input length of the period for RSS: ");
+                period2 = int.Parse(Console.ReadLine());
+            }
+
+            for (int i = 1; i < tactics.Length; i++)
+            {
+                tactics[i].totalPoints = 0;
+                tactics[i].won = 0;
+                tactics[i].lost = 0;
+                tactics[i].minGot = 999999999;
+                tactics[i].maxGot = 0;
+            }
+
+            int k = -1;
+            for (int i = 1; i < tactics.Length; i++)
+            {
+                if (tactics[i].shortName==tactica1)
+                    k = i;
+            }
+
+            for (int j = 1; j < tactics.Length; j++)
+            {
+                if (k != j)
+                {
+                    string tactica2 = tactics[j].shortName;
+                    for (int i = 1; i < tournaments + 1; i++)
+                    {
+                        bool[] res1 = new bool[rounds];
+                        bool[] res2 = new bool[rounds];
+                        string winner;
+                        int points1, points2;
+
+                        string[] writeInFile = new string[3];
+                        writeInFile[0] = tactica1 + "," + tactica2 + "," + i;
+
+                        start_game(tactica1, tactica2, rounds, out points1, out points2, out winner, out res1, out res2);
+
+                        tactics[k].totalPoints = tactics[k].totalPoints + points1;
+
+                        if (tactics[k].minGot > points1)
+                            tactics[k].minGot = points1;
+
+                        if (tactics[k].maxGot < points1)
+                            tactics[k].maxGot = points1;
+
+                        if (points1 > points2)
+                        {
+                            tactics[k].won++;
+                        }
+                        else if (points2 > points1)
+                        {
+                            tactics[k].lost++;
+                        }
+                        else if (points1 == points2)
+                        {
+                            tactics[k].tie++;
+                        }
+
+                        Console.WriteLine(" ");
+                        Console.WriteLine("Tournament " + i);
+
+                        string ans1, ans2;
+                        outputResult(tactica1, rounds, res1, out ans1, show2);
+                        outputResult(tactica2, rounds, res2, out ans2, show2);
+                        Console.WriteLine(" ");
+
+                        writeInFile[1] = tactica1 + "," + points1 + "," + ans1;
+                        writeInFile[2] = tactica2 + "," + points2 + "," + ans2;
+                        File.AppendAllLines("dataResults.csv", writeInFile);
+
+                        Console.WriteLine("Tactics " + tactica1 + " got: " + points1);
+                        Console.WriteLine("Tactics " + tactica2 + " got: " + points2);
+                        Console.WriteLine("Winner " + winner);
+                    }
+                }
+                
+            }
+
+            Console.WriteLine(" ");
+            Console.WriteLine("---------");
+            Console.WriteLine(" ");
+            Console.WriteLine("Results!");
+            File.AppendAllText("dataResults.csv", "results\n");
+
+            int avgPoints = tactics[k].totalPoints / (tournaments * (tactics.Length - 2));
+            File.AppendAllText("dataResults.csv", tactics[k].shortName + "," + tactics[k].totalPoints + "," + avgPoints + "," + tactics[k].won + "," + tactics[k].lost + "," + tactics[k].minGot + "," + tactics[k].maxGot + "," + tactics[k].tie + "\n");
+            Console.Write("Tactica " + tactics[k].name + "; total points: ");
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write(tactics[k].totalPoints);
+            Console.ResetColor();
+            Console.Write("; avarage points: ");
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            Console.Write(avgPoints);
+            Console.ResetColor();
+            Console.WriteLine(" won: " + tactics[k].won + "; lost: " + tactics[k].lost + "; ties: " + tactics[k].tie + "; minimum points got: " + tactics[k].minGot + "; maximum points got: " + tactics[k].maxGot);
+        }
+
+
+
         static void outputTactics() 
         {
             Console.WriteLine("List of all tactics: ");
@@ -656,30 +1046,33 @@ namespace tactics_battle
         //Добавить функцию с помощью которой можно просматривать данные с файла
         //Добавить больше тактик. Найти где я спрашивал у них чатаГПТ и спросить ещё чтобы было штук 40(January, Strat models in Axelrod)
         //Добавить функцию турнира где все тактики против друг друга соревнуються и выводиться отсортированый список тактик с общим кол-вом очков
-        //Если раундов больше чем 1000 то спросить записывать ли данные или нет, также не выводить все результат на экран
 
 
         static void Main(string[] args)
         {
-            tactics= new Record[18]
+            tactics= new Record[22]
             {
-                new Record("Random","R","Randomly cooperate or betray" ),
-                new Record ("Tit for Tat(Mirror)","TfT","It usually cooperates, but if it was betrayed in the last turn, it will betray in the next"),
-                new Record ("AlwaysC","C","Always cooperate"),
-                new Record ("AlwaysT","T","Always betray"),
-                new Record ("Tester","Te","In the first turn, it cooperates, in the second he betrays, and if the opponent also betrays on the third turn, it cooperates for the rest of the game. Otherwise, it will betray all subsequent turns" ),
                 new Record ("User","U","If you want to play against other tactics"),
-                new Record ("Cycled","Cy","Cyclically given number of moves betrays then the same number of moves cooperates" ),
-                new Record ("Cycled Single Shot","CSS","Betrays after every specified number of moves" ),
-                new Record ("Forgiving Tit for Tat","FTfT","It usually cooperates, but if it was betrayed in the last turn, it will betray in the next move with 85% chance" ),
-                new Record ("Nice Tit for Tat(Tit for Two Tats)","NTfT","Similar to Tit for Tat, but it begins by cooperating and continues to cooperate as long as the opponent does not betray twice in a row. If the opponent betrays twice in a row, Nice Tit for Tat betray permanently" ),
-                new Record ("Suspicious Tit for Tat","STfT","A variation of Tit for Tat, where it starts by betraying and then mirrors the opponent's previous move. This strategy is designed to initially avoid exploitation by betraying opponents" ),
-                new Record ("Two Tits for Tat","TTfT","Cooperates unless the opponent betray, in which case it betrays twice in a row" ),
-                new Record ("Reversed Single Shot","RSS","Cooperate after every specified number of moves" ),
-                new Record ("Soft Majority","SM","Cooperates if the opponent has cooperated for more than half of the moves, otherwise he will betray" ),
-                new Record ("Hard Majority","HM","Cooperates if the opponent has cooperated for more than 75% of the moves, otherwise he will betray" ),
-                new Record ("Grudger","G","This strategy cooperates until the opponent betray, after which it betrays for the remainder of the game" ),
+                new Record("Random","R","Randomly cooperate or deflects" ),
+                new Record ("Tit for Tat(Mirror)","TfT","It usually cooperates, but if opponent deflects in the last turn, it will deflect in the next"),
+                new Record ("AlwaysC","C","Always cooperate"),
+                new Record ("AlwaysD","D","Always deflects"),
+                new Record ("Tester","Te","In the first turn, it cooperates, in the second it deflects to test the opponent. If the opponent deflects on the third turn, it cooperates for the rest of the game. Otherwise, it will deflects all subsequent turns" ),
+                new Record ("Cycled","Cy","Cyclically given number of turns deflects then the same number of turns cooperates" ),
+                new Record ("Cycled Single Shot","CSS","Deflectss after every specified number of turns" ),
+                new Record ("Forgiving Tit for Tat","FTfT","It usually cooperates, but if opponent deflects in the last turn, it will deflect in the next turn with 85% chance" ),
+                new Record ("Nice Tit for Tat(Tit for Two Tats)","NTfT","Similar to Tit for Tat, but it begins by cooperating and continues to cooperate as long as the opponent does not deflect twice in a row. If the opponent do that, Nice Tit for Tat deflects permanently" ),
+                new Record ("Suspicious Tit for Tat","STfT","A variation of Tit for Tat, where it starts by deflecting and then mirrors the opponent's previous move. This strategy is designed to initially avoid exploitation by deflecting opponents" ),
+                new Record ("Two Tits for Tat","TTfT","Cooperates unless the opponent deflects, in which case it deflects twice in a row" ),
+                new Record ("Reversed Single Shot","RSS","Cooperate after every specified number of turns" ),
+                new Record ("Soft Majority","SM","Cooperates if the opponent has cooperated for more than half of the moves, otherwise it will deflect" ),
+                new Record ("Hard Majority","HM","Cooperates if the opponent has cooperated for more than 75% of the moves, otherwise it will deflect" ),
+                new Record ("Grudger","G","This strategy cooperates until the opponent deflects, after which it deflectss for the remainder of the game" ),
                 new Record ("Win-Stay, Loose-Shift(Pavlov)","WSLS","This strategy (also known as Pavlov) starts with cooperation, then keeps cooperating as long as it receives the same outcome (win or lose). If the outcome changes, it switches to the opposite action." ),
+                new Record ("Joss","J","Similar to Tit for Tat but occasionally defects randomly, even when the opponent cooperates" ),
+                new Record ("Friedman","F","Cooperates until the opponent defects; then, it cooperates with a 15% chance." ),
+                new Record ("Nice Friedman","NF","Cooperates until the opponent defects; then, it cooperates with a 50% chance." ),
+                new Record ("Very Nice Friedman","VNF","Cooperates until the opponent defects; then, it cooperates with a 80% chance." ),
                 new Record ("Check","Ch","Check something" )
             };
 
@@ -687,8 +1080,8 @@ namespace tactics_battle
             {
                 { "R", Random_T },
                 { "TfT", Tit_for_Tat_T },
-                { "C", AlwaysC_C },
-                { "T", AlwaysC_T },
+                { "C", AlwaysC_T },
+                { "D", AlwaysD_T },
                 { "Te", Tester_T },
                 { "U", User_T },
                 { "FTfT", Forgiving_Tit_for_Tat_T },
@@ -696,13 +1089,17 @@ namespace tactics_battle
                 { "STfT", Suspicious_Tit_for_Tat_T },
                 { "TTfT", Tit_for_Two_Tats_T },
                 { "Cy", Cycled_T },
-                { "Ch", Proverka },
-                { "CSS", Cycled_Single_Shot },
-                { "RSS", Reversed_Single_Shot },
-                { "SM", S_Majority },
-                { "HM", H_Majority },
-                { "G", Grudger },
-                { "WSLS", Win_Stay_Loose_Shift }
+                { "Ch", Proverka_T },
+                { "CSS", Cycled_Single_Shot_T },
+                { "RSS", Reversed_Single_Shot_T },
+                { "SM", Soft_Majority_T },
+                { "HM", Hard_Majority_T },
+                { "G", Grudger_T },
+                { "J", Joss_T },
+                { "F", Friedman_T },
+                { "NF", Nice_Friedman_T },
+                { "VNF", Very_Nice_Friedman_T },
+                { "WSLS", Win_Stay_Loose_Shift_T }
             };
 
             string ans="";
@@ -741,6 +1138,8 @@ namespace tactics_battle
 
             Console.WriteLine("To make a single tournament between two tactics - t");
             Console.WriteLine("To make a multiple tournaments between two tactics - m");
+            Console.WriteLine("To make a multiple tournaments between all tactics - g");
+            Console.WriteLine("To make a multiple tournaments between one against all others - d");
             Console.WriteLine("To exit a program - x");
             Console.WriteLine("To show info about all tactics - i");
             Console.WriteLine("Show commands available - h");
@@ -769,6 +1168,18 @@ namespace tactics_battle
                     case "m":
                         majorCycle++;
                         initializeMultipleTournaments();
+
+                        break;
+
+                    case "g":
+                        majorCycle++;
+                        grandMultipleTournaments();
+
+                        break;
+
+                    case "d":
+                        majorCycle++;
+                        oneAgainstAllMultipleTournaments();
 
                         break;
 
